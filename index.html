@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moje Leki</title>
+    <!-- Link do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sekcja Planowanie i Archiwum -->
+        <div class="dual-column">
+            <!-- Planowanie -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>Planowanie</h2>
+                    <button class="image-button" onclick="openModal('lekModal')">
+                        <img src="images/pil.png" alt="Ikona planowania">
+                    </button>
+                </div>
+                <div id="lek-lista-container" class="lista">
+                    <p class="empty-state">Brak zapisanych leków w planowaniu.</p>
+                </div>
+                <div class="pagination-controls">
+                    <button onclick="previousPage('lek-lista-container')" id="lek-prev-btn" disabled>Poprzednia</button>
+                    <span>Strona <span id="lek-current-page">1</span> z <span id="lek-total-pages">1</span></span>
+                    <button onclick="nextPage('lek-lista-container')" id="lek-next-btn" disabled>Następna</button>
+                </div>
+            </div>
+
+            <!-- Archiwum -->
+            <div class="section">
+                <div class="section-header">
+                    <h2>Archiwum</h2>
+                </div>
+                <div id="lek-archiwum-container" class="lista">
+                    <p class="empty-state">Brak zapisanych danych w archiwum.</p>
+                </div>
+                <div class="pagination-controls">
+                    <button onclick="previousPage('lek-archiwum-container')" id="archiwum-prev-btn" disabled>Poprzednia</button>
+                    <span>Strona <span id="archiwum-current-page">1</span> z <span id="archiwum-total-pages">1</span></span>
+                    <button onclick="nextPage('lek-archiwum-container')" id="archiwum-next-btn" disabled>Następna</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sekcja Pomiary -->
+        <div class="measurements">
+            <h2 class="centered-header">Twoje pomiary</h2>
+            <div class="bottom-nav">
+                <!-- Temperatura -->
+                <div class="measurement-section">
+                    <a href="#" onclick="openModal('temperature-modal')">
+                        <img src="images/tem.png" alt="Temperatura" class="measurement-icon">
+                    </a>
+                    <div id="temperature-list" class="lista">
+                        <p class="empty-state">Brak zapisanych pomiarów temperatury. Kliknij ikonę i dodaj.</p>
+                    </div>
+                    <div class="pagination-controls">
+                        <button onclick="previousPage('temperature-list')" id="temperature-prev-btn" disabled>Poprzednia</button>
+                        <span>Strona <span id="temperature-current-page">1</span> z <span id="temperature-total-pages">1</span></span>
+                        <button onclick="nextPage('temperature-list')" id="temperature-next-btn" disabled>Następna</button>
+                    </div>
+                </div>
+
+                <!-- Ciśnienie -->
+                <div class="measurement-section">
+                    <a href="#" onclick="openModal('pressure-modal')">
+                        <img src="images/hea.png" alt="Ciśnienie" class="measurement-icon">
+                    </a>
+                    <div id="pressure-list" class="lista">
+                        <p class="empty-state">Brak zapisanych pomiarów ciśnienia. Kliknij ikonę i dodaj.</p>
+                    </div>
+                    <div class="pagination-controls">
+                        <button onclick="previousPage('pressure-list')" id="pressure-prev-btn" disabled>Poprzednia</button>
+                        <span>Strona <span id="pressure-current-page">1</span> z <span id="pressure-total-pages">1</span></span>
+                        <button onclick="nextPage('pressure-list')" id="pressure-next-btn" disabled>Następna</button>
+                    </div>
+                </div>
+
+                <!-- Saturacja -->
+                <div class="measurement-section">
+                    <a href="#" onclick="openModal('saturation-modal')">
+                        <img src="images/sat.png" alt="Saturacja" class="measurement-icon">
+                    </a>
+                    <div id="saturation-list" class="lista">
+                        <p class="empty-state">Brak zapisanych pomiarów saturacji. Kliknij ikonę i dodaj.</p>
+                    </div>
+                    <div class="pagination-controls">
+                        <button onclick="previousPage('saturation-list')" id="saturation-prev-btn" disabled>Poprzednia</button>
+                        <span>Strona <span id="saturation-current-page">1</span> z <span id="saturation-total-pages">1</span></span>
+                        <button onclick="nextPage('saturation-list')" id="saturation-next-btn" disabled>Następna</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale -->
+    <!-- Modal dla leków -->
+    <div id="lekModal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('lekModal')">&times;</button>
+            <h2>Dodaj Lek</h2>
+            <form id="lekForm">
+                <div class="form-group">
+                    <label for="nazwa">Nazwa leku</label>
+                    <input type="text" id="nazwa" name="nazwa" placeholder="Wprowadź nazwę leku" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="typ">Typ leku</label>
+                    <select id="typ" name="typ" onchange="toggleFields()" required>
+                        <option value="">Proszę wybrać</option>
+                        <option value="tabletka">Tabletka</option>
+                        <option value="syrop">Syrop</option>
+                    </select>
+                </div>
+
+                <!-- Kontener dla dawki tabletki -->
+                <div class="form-group" id="dawka-tabletki-container" style="display: none;">
+                    <label for="dawkaTabletki">Dawka (tabletki)</label>
+                    <input type="number" id="dawkaTabletki" name="dawkaTabletki" min="0.25" step="0.25" placeholder="Wprowadź dawkę w tabletkach">
+                </div>
+
+                <!-- Kontener dla dawki syropu -->
+                <div class="form-group" id="dawka-ml-container" style="display: none;">
+                    <label for="dawkaMl">Dawka (ml)</label>
+                    <input type="number" id="dawkaMl" name="dawkaMl" min="25" step="5" placeholder="Wprowadź dawkę w ml">
+                </div>
+
+                <div class="form-group">
+                    <label for="pierwsza-dawka">Godzina pierwszej dawki</label>
+                    <input type="time" id="pierwsza-dawka" name="pierwsza-dawka" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="lengthDays">Długość zażywania (dni)</label>
+                    <input type="number" id="lengthDays" name="lengthDays" min="1" placeholder="Wprowadź liczbę dni" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="frequencyHours">Częstotliwość zażywania (h)</label>
+                    <select id="frequencyHours" name="frequencyHours" required>
+                        <option value="">Wybierz częstotliwość</option>
+                        <option value="1">1 godzina</option>
+                        <option value="2">2 godziny</option>
+                        <option value="3">3 godziny</option>
+                        <option value="6">6 godzin</option>
+                        <option value="8">8 godzin</option>
+                        <option value="12">12 godzin</option>
+                        <option value="24">24 godziny</option>
+                    </select>
+                </div>
+
+                <button type="submit">Zapisz</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Modal dla temperatury -->
+    <div id="temperature-modal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('temperature-modal')">&times;</button>
+            <h2>Temperatura</h2>
+            <form id="temperatureForm">
+                <div class="form-group">
+                    <label for="temperature-value">Temperatura (°C)</label>
+                    <input type="number" id="temperature-value" step="0.1" value="36.6" placeholder="Wprowadź temperaturę" required>
+                </div>
+                <button type="button" onclick="saveTemperature()">Zapisz</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal dla ciśnienia -->
+    <div id="pressure-modal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('pressure-modal')">&times;</button>
+            <h2>Ciśnienie</h2>
+            <form id="pressureForm">
+                <div class="form-group">
+                    <label for="pressure-systolic">Ciśnienie Systoliczne (mmHg)</label>
+                    <input type="number" id="pressure-systolic" value="120" placeholder="Wprowadź wartość skurczowego" required>
+                </div>
+                <div class="form-group">
+                    <label for="pressure-diastolic">Ciśnienie Diastoliczne (mmHg)</label>
+                    <input type="number" id="pressure-diastolic" value="80" placeholder="Wprowadź wartość rozkurczowego" required>
+                </div>
+                <button type="button" onclick="savePressure()">Zapisz</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal dla saturacji -->
+    <div id="saturation-modal" class="modal">
+        <div class="modal-content">
+            <button class="close" onclick="closeModal('saturation-modal')">&times;</button>
+            <h2>Saturacja</h2>
+            <form id="saturationForm">
+                <div class="form-group">
+                    <label for="saturation-value">Saturacja (%)</label>
+                    <input type="number" id="saturation-value" step="1" value="99" max="100" placeholder="Wprowadź saturację" required>
+                </div>
+                <button type="button" onclick="saveSaturation()">Zapisz</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
