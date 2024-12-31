@@ -813,3 +813,46 @@ window.saveSaturation = () => {
         alert("Nieprawidłowa wartość saturacji.");
     }
 };
+
+
+// Załaduj dane z pliku JSON
+fetch('json/RL.json')
+    .then(response => response.json())
+    .then(data => {
+        leki = data;
+        console.log("Leki załadowane:", leki);
+    })
+    .catch(error => console.error("Błąd wczytywania pliku RL.json:", error));
+
+// Elementy
+const nazwaInput = document.getElementById("nazwa");
+const suggestionsContainer = document.createElement("div");
+suggestionsContainer.id = "suggestions-container";
+nazwaInput.parentElement.appendChild(suggestionsContainer);
+
+// Obsługa wprowadzania danych
+nazwaInput.addEventListener("input", (event) => {
+    const query = event.target.value.toLowerCase();
+    if (query.length >= 4) {
+        const filteredLeki = leki.filter(lek => lek.nazwa.toLowerCase().includes(query));
+        renderSuggestions(filteredLeki.slice(0, 10));
+    } else {
+        suggestionsContainer.innerHTML = "";
+    }
+});
+
+// Renderuj sugestie
+function renderSuggestions(suggestions) {
+    suggestionsContainer.innerHTML = "";
+    suggestions.forEach(suggestion => {
+        const suggestionDiv = document.createElement("div");
+        suggestionDiv.className = "suggestion";
+        suggestionDiv.textContent = suggestion.nazwa;
+        suggestionDiv.addEventListener("click", () => {
+            nazwaInput.value = suggestion.nazwa;
+            suggestionsContainer.innerHTML = "";
+        });
+        suggestionsContainer.appendChild(suggestionDiv);
+    });
+}
+
