@@ -816,7 +816,7 @@ window.saveSaturation = () => {
 
 // Funkcja do załadowania danych z pliku RL.json
 function loadDrugsFromFile() {
-    fetch('json/RL.json') // Upewnij się, że plik RL.json jest w tej samej lokalizacji co strona
+    fetch('RL.json') // Upewnij się, że plik RL.json jest w tej samej lokalizacji co strona
         .then(response => response.json())
         .then(data => {
             leki = data; // Przypisz dane do tablicy leki
