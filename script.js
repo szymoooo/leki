@@ -94,7 +94,7 @@ document.querySelectorAll('.modal').forEach(modal => {
 });
 
 // Obsługa modalnych okien
-window.openModal = (modalId) => {
+window.openModal = function (modalId)  {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.style.display = "flex"; // Otwórz modal
@@ -104,7 +104,7 @@ window.openModal = (modalId) => {
     }
 };
 
-window.closeModal = (modalId) => {
+window.closeModal = function (modalId)  {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.style.display = "none"; // Zamknij modal
@@ -220,7 +220,7 @@ function renderLekList() {
             dawkaForma = getTabletkaForma(lek.dawka);
             jednostka = dawkaForma;
         } else if (lek.typ === 'syrop') {
-            jednostka = 'syropu';
+            jednostka = 'ml syropu';
         }
 
         // Tworzenie elementów do wyświetlenia
@@ -814,34 +814,29 @@ window.saveSaturation = () => {
     }
 };
 
+// Funkcja do załadowania danych z pliku RL.json
+function loadDrugsFromFile() {
+    fetch('json/RL.json') // Upewnij się, że plik RL.json jest w tej samej lokalizacji co strona
+        .then(response => response.json())
+        .then(data => {
+            leki = data; // Przypisz dane do tablicy leki
+        })
+        .catch(error => console.error('Błąd wczytywania pliku RL.json:', error));
+}
 
-// Załaduj dane z pliku JSON
-fetch('json/RL.json')
-    .then(response => response.json())
-    .then(data => {
-        leki = data;
-        console.log("Leki załadowane:", leki);
-    })
-    .catch(error => console.error("Błąd wczytywania pliku RL.json:", error));
-
-// Elementy
-const nazwaInput = document.getElementById("nazwa");
-const suggestionsContainer = document.createElement("div");
-suggestionsContainer.id = "suggestions-container";
-nazwaInput.parentElement.appendChild(suggestionsContainer);
-
-// Obsługa wprowadzania danych
-nazwaInput.addEventListener("input", (event) => {
-    const query = event.target.value.toLowerCase();
-    if (query.length >= 4) {
-        const filteredLeki = leki.filter(lek => lek.nazwa.toLowerCase().includes(query));
-        renderSuggestions(filteredLeki.slice(0, 10));
-    } else {
-        suggestionsContainer.innerHTML = "";
-    }
+// Wywołanie funkcji podczas ładowania strony
+document.addEventListener('DOMContentLoaded', () => {
+    loadDrugsFromFile();
 });
 
-// Renderuj sugestie
+// Funkcja filtrowania leków
+function filterDrugs(query) {
+    return leki.filter(drug =>
+        drug.nazwa.toLowerCase().includes(query.toLowerCase())
+    );
+}
+
+// Renderowanie sugestii
 function renderSuggestions(suggestions) {
     suggestionsContainer.innerHTML = "";
     suggestions.forEach(suggestion => {
@@ -856,3 +851,17 @@ function renderSuggestions(suggestions) {
     });
 }
 
+// Obsługa pola nazwa
+const nazwaInput = document.getElementById("nazwa");
+const suggestionsContainer = document.getElementById("suggestionsContainer");
+
+nazwaInput.addEventListener("input", (event) => {
+    const query = event.target.value.toLowerCase();
+
+    if (query.length >= 4) { // Zmienione na 4 znaki
+        const filteredLeki = filterDrugs(query); // Filtruj leki na podstawie zapytania
+        renderSuggestions(filteredLeki.slice(0, 10)); // Wyświetl maksymalnie 10 sugestii
+    } else {
+        suggestionsContainer.innerHTML = ""; // Wyczyść sugestie, jeśli zapytanie jest za krótkie
+    }
+});
