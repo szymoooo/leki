@@ -816,12 +816,12 @@ window.saveSaturation = () => {
 
 // Funkcja do załadowania danych z pliku RL.json
 function loadDrugsFromFile() {
-    fetch('RL.json') // Upewnij się, że plik RL.json jest w tej samej lokalizacji co strona
+    fetch('lista.json') // Upewnij się, że plik RL.json jest w tej samej lokalizacji co strona
         .then(response => response.json())
         .then(data => {
             leki = data; // Przypisz dane do tablicy leki
         })
-        .catch(error => console.error('Błąd wczytywania pliku RL.json:', error));
+        .catch(error => console.error('Błąd wczytywania pliku lista.json:', error));
 }
 
 // Wywołanie funkcji podczas ładowania strony
